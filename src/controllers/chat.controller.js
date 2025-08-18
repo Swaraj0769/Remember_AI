@@ -1,5 +1,4 @@
 const chatModel = require('../models/chat.model');
-const userModel = require('../models/chat.model')
 
 
 async function createChat(req, res) {
@@ -16,7 +15,8 @@ async function createChat(req, res) {
         chat:{
             _id: chat._id,
             title: chat.title,
-            lastActivity: chat.lastActivity
+            lastActivity: chat.lastActivity,
+            user: chat.user
         }
     })
 }
