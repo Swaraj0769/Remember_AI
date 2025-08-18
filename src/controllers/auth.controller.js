@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model')
-const bcryptjs = require('bcryptjs')
+const bcrypt = require('bcryptjs')
+const jwt= require('jsonwebtoken')
 
 async function registerUser(req, res) {
     const { fullName:{firstName, lastName},email, password} = req.body;
@@ -12,6 +13,8 @@ async function registerUser(req, res) {
         })
     }
 
+    const hashPassword= await bcrypt.hash(password, 10)
+
     const user = await userModel.create({
         fullName:{
             firstName, lastName
@@ -20,7 +23,7 @@ async function registerUser(req, res) {
         password: hashPassword
     })
 
-    const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET)
+    const token = jwt.sign({id: user._id}, process.env.JWT_SECRET)
 
     res.cookie("token", token)
 
@@ -49,10 +52,20 @@ async function loginUser(req, res) {
 
     const token = jwt.sign({ id:user._id}, process.env.JWT_SECRET)
 
-    
+    res.cookie("token", token)
+
+    res.status(200).json({
+        message:"User Logged In Successfully",
+        user:{
+            email: user.email,
+            _id: user._id,
+            fullName: user.fullName
+        }
+    })
 }
 
 
 module.exports = {
     registerUser,
+    loginUser
 }
