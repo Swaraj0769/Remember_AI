@@ -37,20 +37,27 @@ function initSocketServer(httpServer){
                 content: message text content
             } */
 
-            // await messageModel.create({
-            //     chat: messagePayload.chat,
-            //     user: socket.user._id,
-            //     content: messagePayload.content,
-            //     role: "user"
-            // })
+            const message = await messageModel.create({
+                chat: messagePayload.chat,
+                user: socket.user._id,
+                content: messagePayload.content,
+                role: "user"
+            })
 
-            // await createMemory({
-
-            // })
-
+            
             const vectors = await aiService.generateVector(messagePayload.content)
-
-            console.log("Vector genenrated", vectors);
+             
+            await createMemory({
+                vectors,
+                messageId: message._id,
+                metadata: {
+                    chat: messagePayload.chat,
+                    user: socket.user._id,
+                    // text: messagePayload.content 
+                }
+            })
+            
+            // console.log("Vector genenrated", vectors);
             
 
             const chatHistory = (await messageModel.find({
@@ -66,12 +73,23 @@ function initSocketServer(httpServer){
                 }
             }))
 
-            // await messageModel.create({
-            //     chat: messagePayload.chat,
-            //     user: socket.user._id,
-            //     content: response,
-            //     role: "model"
-            // })
+            const responseMessage = await messageModel.create({
+                chat: messagePayload.chat,
+                user: socket.user._id,
+                content: response,
+                role: "model"
+            })
+
+            const responseVectors = await aiService.generateVector( response)
+
+            await createMemory({
+                vectors: responseVectors,
+                messageId: responseMessage._id,
+                metadata:{
+                    chat: messagePayload.chat,
+                    user: socket.user._id
+                }
+            })
 
             socket.emit("ai-response", {
                 content: response,

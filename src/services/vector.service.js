@@ -7,7 +7,7 @@ const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 // Create a dense index with integrated embedding
 const chatbotIndex = pc.Index('chatbot')
 
-async function createMemory({vectors, metadata}) {
+async function createMemory({vectors, metadata, messageId}) {
     await chatbotIndex.upsert([ {
         id: messageId,
         values: vectors,
