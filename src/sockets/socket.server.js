@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken')
 const userModel = require('../models/user.model')
 const aiService = require('../services/ai.service')
 const messageModel = require('../models/message.model')
-const { createMemory, queryMemory } = require('../services/vector.service')
+const { createMemory, queryMemory } = require('../services/vector.service');
+const { text } = require("express");
 
 function initSocketServer(httpServer){
     const io = new Server(httpServer, {})
@@ -50,7 +51,9 @@ function initSocketServer(httpServer){
             const memory = await queryMemory({
                 queryVector: vectors,
                 limit: 3,
-                metadata:{}
+                metadata:{
+                    user: socket.user._id
+                }
             })
 
             await createMemory({
@@ -63,20 +66,41 @@ function initSocketServer(httpServer){
                 }
             })
                    
-console.log(memory);
+// console.log(memory);
 
             const chatHistory = (await messageModel.find({
                 chat: messagePayload.chat
-            }).sort({createdAt: -1}).limit(7).lean()).reverse()
+            }).sort({createdAt: -1}).limit(15).lean()).reverse()
 
             // console.log("Chat History:", );
             
-            const response = await aiService.generateResponse(chatHistory.map(item=>{
+            const stm = chatHistory.map(item=>{
                 return {
                     role: item.role,
                     parts: [{ text: item.content }]
                 }
-            }))
+            })
+
+            const ltm = [
+                {
+                    role: "user",
+                    parts: [{ text: `
+                        these are some previous message from the chat, use them to generate a senponse
+
+                        ${memory.map(item =>item.metadata.text).join("\n")}
+                        `}]
+                }
+            ]
+
+            console.log(ltm[0]);
+            console.log(stm);
+            
+            
+
+            const response = await aiService.generateResponse([...ltm,...stm])
+
+            // console.log(response);
+            
 
             const responseMessage = await messageModel.create({
                 chat: messagePayload.chat,
