@@ -5,7 +5,7 @@ const userModel = require('../models/user.model')
 const aiService = require('../services/ai.service')
 const messageModel = require('../models/message.model')
 const { createMemory, queryMemory } = require('../services/vector.service');
-const { text } = require("express");
+// const { text } = require("express");
 
 function initSocketServer(httpServer){
     const io = new Server(httpServer, {})
@@ -56,8 +56,9 @@ function initSocketServer(httpServer){
                     role: "user"
                 }),
                 aiService.generateVector(messagePayload.content),
+            ])
 
-                createMemory({
+            await createMemory({
                 vectors,
                 messageId: message._id,
                 metadata: {
@@ -66,7 +67,6 @@ function initSocketServer(httpServer){
                     text: messagePayload.content 
                 }
             })
-            ])
              
             /*
             const memory = await queryMemory({
@@ -156,7 +156,8 @@ function initSocketServer(httpServer){
                 messageId: responseMessage._id,
                 metadata:{
                     chat: messagePayload.chat,
-                    user: socket.user._id
+                    user: socket.user._id,
+                    // text: response
                 }
             })
         })
