@@ -66,7 +66,7 @@ function initSocketServer(httpServer){
                 }
             })
                    
-// console.log(memory);
+            // console.log(memory);
 
             const chatHistory = (await messageModel.find({
                 chat: messagePayload.chat
@@ -92,15 +92,12 @@ function initSocketServer(httpServer){
                 }
             ]
 
-            console.log(ltm[0]);
-            console.log(stm);
-            
-            
+            // console.log(ltm[0]);
+            // console.log(stm);
 
             const response = await aiService.generateResponse([...ltm,...stm])
 
             // console.log(response);
-            
 
             const responseMessage = await messageModel.create({
                 chat: messagePayload.chat,
