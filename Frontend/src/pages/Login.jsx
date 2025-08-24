@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
     const [ form, setForm ] = useState({ email: '', password: '' });
@@ -10,11 +12,37 @@ const Login = () => {
         setForm({ ...form, [name]: value });
     }
 
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setSubmitting(true);
+
+
+        // console.log(form);
+
+        // axios.post("https://cohort-1-project-chat-gpt.onrender.com/api/auth/login", {
+        axios.post("https://localhost:3000/api/auth/login", {
+            email: form.email,
+            password: form.password
+        },
+            {
+                withCredentials: true
+            }
+        ).then((res) => {
+            console.log(res);
+            navigate("/");
+        }).catch((err) => {
+            console.error(err);
+        }).finally(() => {
+            setSubmitting(false);
+        });
+
+    }
+
   return (
     <div className="center-min-h-screen">
             <div className="auth-card" role="main" aria-labelledby="login-heading">
                 <header className="auth-header">
-                    <h1 id="login-heading">Sign in</h1>
+                    <h1 id="login-heading">Log in</h1>
                     <p className="auth-sub">Welcome back. We've missed you.</p>
                 </header>
                 <form className="auth-form" onSubmit={handleSubmit} noValidate>
