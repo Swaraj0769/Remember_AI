@@ -4,16 +4,17 @@ import Home from './pages/Home'
 import Register from './pages/Register'
 import Login from './pages/Login'
 
-const AppRouter = () => {
-  return (
-    <BrowserRouter>
-        <Routes>
-            <Route path='/' element={<Home/>}/>
-            <Route path='/register' element={<Register/>}/>
-            <Route path='/login' element={<Login/>}/>
-        </Routes>
-    </BrowserRouter>
-  )
+const AppRoutes = () => {
+    return (
+
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/login' element={<Login />} />
+            </Routes>
+        </BrowserRouter>
+    )
 }
 
-export default AppRouter
+export default AppRoutes
